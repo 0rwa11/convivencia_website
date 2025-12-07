@@ -3,7 +3,7 @@ import { Menu, X, Moon, Sun, BarChart3, BookOpen, Wrench, LogOut, Download } fro
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
-import { usePasswordProtection } from "@/contexts/PasswordProtectionContext";
+
 import { useEvaluation } from "@/contexts/EvaluationContext";
 import { generateEvaluationPDF } from "@/lib/pdfReportGenerator";
 
@@ -17,12 +17,11 @@ export default function Navigation() {
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { logout } = usePasswordProtection();
+
   const { records } = useEvaluation();
 
   const handleLogout = () => {
-    logout();
-    setLocation('/');
+    alert('Logout functionality is disabled in static mode.');
   };
 
   const handleExportPDF = () => {
@@ -120,15 +119,7 @@ export default function Navigation() {
             {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            className="text-foreground hover:bg-secondary"
-            title="Cerrar sesión"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
+
 
           {/* Mobile Menu Button */}
           <Button
