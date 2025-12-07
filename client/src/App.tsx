@@ -21,15 +21,15 @@ import AdvancedSearch from './pages/AdvancedSearch';
 import ExecutiveSummary from './pages/ExecutiveSummary';
 import SessionCalendar from "./pages/SessionCalendar";
 import Dashboard from "./pages/Dashboard";
-import PasswordLogin from "./pages/PasswordLogin";
-import { PasswordProtectionProvider, usePasswordProtection } from "./contexts/PasswordProtectionContext";
+
+
 
 function Router() {
-  const { isAuthenticated } = usePasswordProtection();
 
-  if (!isAuthenticated) {
-    return <PasswordLogin />;
-  }
+
+
+
+
 
   return (
     <>
@@ -60,7 +60,7 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <PasswordProtectionProvider>
+
         <EnhancedNotificationProvider>
           <ThemeProvider defaultTheme="light" switchable>
             <EvaluationProvider>
@@ -71,7 +71,7 @@ function App() {
             </EvaluationProvider>
           </ThemeProvider>
         </EnhancedNotificationProvider>
-      </PasswordProtectionProvider>
+
     </ErrorBoundary>
   );
 }
