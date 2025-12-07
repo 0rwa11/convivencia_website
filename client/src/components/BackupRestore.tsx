@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Download, Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import { useEvaluation } from '@/contexts/EvaluationContext';
-import { cloudSync } from '@/lib/cloudSync';
+
 
 export default function BackupRestore() {
   const { records } = useEvaluation();
@@ -62,13 +62,7 @@ export default function BackupRestore() {
       // Save to localStorage
       localStorage.setItem('convivencia_evaluations', JSON.stringify(backupData.evaluations));
       
-      // Save to cloud sync
-      cloudSync.save({
-        evaluations: backupData.evaluations,
-        sessions: backupData.evaluations,
-        tags: [],
-        settings: [],
-      });
+
 
       setMessage({
         type: 'success',
@@ -92,8 +86,8 @@ export default function BackupRestore() {
     }
   };
 
-  const lastSyncTime = cloudSync.getLastSyncTime();
-  const storageSize = cloudSync.getStorageSize();
+  const lastSyncTime = null;
+  const storageSize = 0;
 
   return (
     <div className="space-y-4">
@@ -167,27 +161,15 @@ export default function BackupRestore() {
       </Card>
 
       {/* Info Section */}
-      <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-        <h3 className="text-lg font-semibold text-foreground mb-3">ℹ️ Información de Sincronización</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Última sincronización:</span>
-            <span className="font-medium text-foreground">
-              {lastSyncTime ? lastSyncTime.toLocaleString('es-ES') : 'Nunca'}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Tamaño de datos:</span>
-            <span className="font-medium text-foreground">
-              {(storageSize / 1024).toFixed(2)} KB
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Total de evaluaciones:</span>
-            <span className="font-medium text-foreground">{records.length}</span>
-          </div>
-        </div>
-      </Card>
+	      <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+	        <h3 className="text-lg font-semibold text-foreground mb-3">ℹ️ Información de Datos Locales</h3>
+	        <div className="space-y-2 text-sm">
+	          <div className="flex justify-between">
+	            <span className="text-muted-foreground">Total de evaluaciones:</span>
+	            <span className="font-medium text-foreground">{records.length}</span>
+	          </div>
+	        </div>
+	      </Card>
 
       {/* Instructions */}
       <Card className="p-6 bg-card">

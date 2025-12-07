@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { saveToCloud, loadFromCloud, setupCrossTabSync } from '@/lib/cloudSyncService';
 
 export interface EvaluationRecord {
   id: string;
@@ -61,35 +60,10 @@ const initializeRecords = (): EvaluationRecord[] => {
 export function EvaluationProvider({ children }: { children: React.ReactNode }) {
   const [records, setRecords] = useState<EvaluationRecord[]>(initializeRecords);
 
-  // Save to localStorage and cloud sync whenever records change
+  // Save to localStorage whenever records change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-    // Auto-sync to cloud
-    saveToCloud({
-      records,
-      sessions: [],
-      calendar: [],
-    });
   }, [records]);
-
-  // Setup cross-tab/device sync
-  useEffect(() => {
-    const unsubscribe = setupCrossTabSync((syncedData) => {
-      if (syncedData?.evaluations) {
-        setRecords(syncedData.evaluations);
-      }
-    });
-    return unsubscribe;
-  }, []);
-
-  // Load from cloud on mount
-  useEffect(() => {
-    loadFromCloud().then((cloudData) => {
-      if (cloudData?.evaluations && cloudData.evaluations.length > records.length) {
-        setRecords(cloudData.evaluations);
-      }
-    });
-  }, []);
 
   const addRecord = (record: EvaluationRecord) => {
     const updated = [...records, record];
@@ -110,23 +84,17 @@ export function EvaluationProvider({ children }: { children: React.ReactNode }) 
   };
 
   const getRecordsByGroup = (groupName: string) => {
-    const currentRecords = localStorage.getItem(STORAGE_KEY) 
-      ? JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-      : records;
+    const currentRecords = records;
     return currentRecords.filter((r: EvaluationRecord) => r.groupName === groupName);
   };
 
   const getAllGroups = () => {
-    const currentRecords = localStorage.getItem(STORAGE_KEY)
-      ? JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-      : records;
+    const currentRecords = records;
     return Array.from(new Set(currentRecords.map((r: EvaluationRecord) => r.groupName))).sort() as string[];
   };
 
   const getGroupStats = (groupName: string) => {
-    const currentRecords = localStorage.getItem(STORAGE_KEY)
-      ? JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-      : records;
+    const currentRecords = records;
     const groupRecords = currentRecords.filter((r: EvaluationRecord) => r.groupName === groupName);
     if (groupRecords.length === 0) {
       return null;
@@ -172,15 +140,10 @@ export function EvaluationProvider({ children }: { children: React.ReactNode }) 
     };
   };
 
-  // Ensure records are always synced with localStorage
-  const syncedRecords = localStorage.getItem(STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-    : records;
-
   return (
     <EvaluationContext.Provider
       value={{
-        records: syncedRecords,
+        records,
         addRecord,
         updateRecord,
         deleteRecord,
@@ -199,13 +162,5 @@ export function useEvaluation() {
   if (context === undefined) {
     throw new Error('useEvaluation must be used within EvaluationProvider');
   }
-  // Ensure we always get fresh data from localStorage
-  const freshRecords = localStorage.getItem(STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(STORAGE_KEY)!)
-    : context.records;
-  
-  return {
-    ...context,
-    records: freshRecords,
-  };
+  return context;
 }
